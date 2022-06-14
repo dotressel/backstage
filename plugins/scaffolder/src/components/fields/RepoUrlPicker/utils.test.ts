@@ -65,6 +65,46 @@ describe('utils', () => {
       expect(
         parseRepoPickerUrl(
           'github.com?owner=owner&repo=backstage&organization=organization&workspace=workspace&project=backstage',
+          {},
+        ),
+      ).toEqual({
+        host: 'github.com',
+        owner: 'owner',
+        repoName: 'backstage',
+        organization: 'organization',
+        workspace: 'workspace',
+        project: 'backstage',
+      });
+    });
+
+    it('should conform to given constraints', () => {
+      expect(
+        parseRepoPickerUrl(
+          'github.com?owner=owner&repo=backstage&organization=organization&workspace=workspace&project=backstage',
+          {
+            allowedHosts: ['gitlab.com'],
+            allowedOwners: ['different-owner'],
+            allowedRepos: ['repository'],
+          },
+        ),
+      ).toEqual({
+        host: 'gitlab.com',
+        owner: 'different-owner',
+        repoName: 'repository',
+        organization: 'organization',
+        workspace: 'workspace',
+        project: 'backstage',
+      });
+    });
+
+    it('should work for multiple, empty and undefined constraints', () => {
+      expect(
+        parseRepoPickerUrl(
+          'github.com?owner=owner&repo=backstage&organization=organization&workspace=workspace&project=backstage',
+          {
+            allowedHosts: ['gitlab.com', 'github.com'],
+            allowedOwners: [],
+          },
         ),
       ).toEqual({
         host: 'github.com',

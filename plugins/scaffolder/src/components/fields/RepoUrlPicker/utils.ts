@@ -43,6 +43,11 @@ export function serializeRepoPickerUrl(data: RepoUrlPickerState) {
 
 export function parseRepoPickerUrl(
   url: string | undefined,
+  constraints: {
+    allowedHosts?: string[];
+    allowedOwners?: string[];
+    allowedRepos?: string[];
+  },
 ): RepoUrlPickerState {
   let host = '';
   let owner = '';
@@ -50,6 +55,11 @@ export function parseRepoPickerUrl(
   let organization = '';
   let workspace = '';
   let project = '';
+  const {
+    allowedHosts = [],
+    allowedOwners = [],
+    allowedRepos = [],
+  } = constraints;
 
   try {
     if (url) {
@@ -63,6 +73,16 @@ export function parseRepoPickerUrl(
     }
   } catch {
     /* ok */
+  }
+
+  if (allowedHosts.length && allowedHosts.indexOf(host) < 0) {
+    host = allowedHosts[0];
+  }
+  if (allowedOwners.length && allowedOwners.indexOf(host) < 0) {
+    owner = allowedOwners[0];
+  }
+  if (allowedRepos.length && allowedRepos.indexOf(host) < 0) {
+    repoName = allowedRepos[0];
   }
 
   return { host, owner, repoName, organization, workspace, project };

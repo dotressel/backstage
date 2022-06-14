@@ -64,9 +64,6 @@ export const RepoUrlPicker = (
   props: FieldExtensionComponentProps<string, RepoUrlPickerUiOptions>,
 ) => {
   const { uiSchema, onChange, rawErrors, formData } = props;
-  const [state, setState] = useState<RepoUrlPickerState>(
-    parseRepoPickerUrl(formData),
-  );
   const integrationApi = useApi(scmIntegrationsApiRef);
   const scmAuthApi = useApi(scmAuthApiRef);
   const { setSecrets } = useTemplateSecrets();
@@ -81,6 +78,15 @@ export const RepoUrlPicker = (
   const allowedRepos = useMemo(
     () => uiSchema?.['ui:options']?.allowedRepos ?? [],
     [uiSchema],
+  );
+
+  /* need to init state with correct values if user is unable to trigger onChange */
+  const [state, setState] = useState<RepoUrlPickerState>(
+    parseRepoPickerUrl(formData, {
+      allowedHosts: allowedHosts,
+      allowedOwners: allowedOwners,
+      allowedRepos: allowedRepos,
+    }),
   );
 
   useEffect(() => {
